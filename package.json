@@ -1,6 +1,6 @@
 {
   "name": "eventm",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Manage all events in your app",
   "main": "eventm.min.js",
   "scripts": {

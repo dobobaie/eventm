@@ -13,9 +13,9 @@ module.exports = (section) => {
 			isResolve: false,
 			stack: [],
 		});
-		listSections[section].cache = data;
-		listSections[section].called = true;
-		listSections[section].isResolve = isResolve;
+		listSections[section].events[name].cache = data;
+		listSections[section].events[name].called = true;
+		listSections[section].events[name].isResolve = isResolve;
 		listSections[section].events[name].stack = listSections[section].events[name].stack.filter((elem, key) => {
 			if (specificKey !== undefined && specificKey !== key) return elem;
 			if (elem.cb && elem.cb !== null && isResolve === true && !elem.onlyData) elem.cb(null, data);
