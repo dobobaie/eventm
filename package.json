@@ -1,0 +1,32 @@
+{
+  "name": "eventm",
+  "version": "0.0.1",
+  "description": "Manage all events in your app",
+  "main": "eventm.min.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dobobaie/eventm.git"
+  },
+ "keywords": [
+    "event",
+    "evenements",
+    "evenement",
+    "events",
+    "manage",
+    "manager",
+    "mevent",
+    "eventm",
+    "on",
+    "resolve",
+    "reject"
+  ],
+  "author": "Dobobaie",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/dobobaie/eventm/issues"
+  },
+  "homepage": "https://github.com/dobobaie/eventm#readme"
+}
