@@ -13,6 +13,7 @@ module.exports = (section) => {
 			isResolve: false,
 			stack: [],
 		});
+		
 		listSections[section].events[name].cache = data;
 		listSections[section].events[name].called = true;
 		listSections[section].events[name].isResolve = isResolve;
@@ -20,7 +21,7 @@ module.exports = (section) => {
 			if (specificKey !== undefined && specificKey !== key) return elem;
 			if (elem.cb && elem.cb !== null && isResolve === true && !elem.onlyData) elem.cb(null, data);
 			if (elem.cb && elem.cb !== null && ((!elem.onlyData && isResolve === false) || (isResolve === true && elem.onlyData))) elem.cb(data);
-			if (elem.promise === true) (listSections[section].isResolve ? elem.resolve(data) : elem.reject(data));
+			if (elem.promise === true) (listSections[section].events[name].isResolve ? elem.resolve(data) : elem.reject(data));
 			return !elem.isUnique;
 		});
 	};
