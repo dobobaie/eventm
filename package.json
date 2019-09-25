@@ -1,7 +1,7 @@
 {
   "name": "eventm",
-  "version": "1.0.0",
-  "description": "Manage all events in your app",
+  "version": "1.1.0",
+  "description": "Eventm help you to manage all evenements in your code. The library store the state and the callback stack for you.",
   "main": "eventm.min.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -12,8 +12,6 @@
   },
  "keywords": [
     "event",
-    "evenements",
-    "evenement",
     "events",
     "manage",
     "manager",

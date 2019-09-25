@@ -1,33 +1,45 @@
 // -------------- BEHIND
-const eventm = require('../eventm');
+const mevent = new require('../eventm')();
 
 const myLib = new function()
 {
-	const mevent = eventm('myLib');
+	this.tryEventInSingleParam = (cb) => mevent.create('tryEventInSingleParam', cb, { disableErrorParameter: true });
+	setTimeout(() => mevent.getEvent('tryEventInSingleParam').resolve('tryEventInSingleParam function executed'), 1000);
 
-	this.ready = (cb) => mevent.on('ready', cb, { isUnique: false, onlyData: true, cache: true });
-	setTimeout(() => mevent.resolve('ready'), 1000);
+	this.tryEventMultiParams = (cb) => mevent.create('tryEventMultiParams', cb);
+	setTimeout(() => mevent.getEvent('tryEventMultiParams').resolve('tryEventMultiParams function executed'), 2000);
 
-	this.listen = (cb) => mevent.on('listen', cb, { cache: true });
-	setTimeout(() => mevent.resolve('listen', 'Listen port 4000'), 2000);
+	this.tryEventWithPromise = (cb) => mevent.create('tryEventWithPromise', cb, { promise: true });
+	setTimeout(() => mevent.getEvent('tryEventWithPromise').resolve('tryEventWithPromise function executed'), 3000);
 
-	this.response = (cb) => mevent.on('response', cb, { promise: true });
-	setTimeout(() => mevent.resolve('response', 'Hello World'), 3000);
+	this.tryEventKeepSession = (cb) => mevent.create('tryEventKeepSession', cb, { promise: true });
+	setTimeout(() => mevent.getEvent('tryEventKeepSession').resolve('tryEventKeepSession function executed'), 4000);
 
-	this.send = (data) => {
-		mevent.on('send', null, { promise: true });
-		mevent.reject('send', `You can't send message`);
+	this.tryEventDontKeepSession = (cb) => mevent.create('tryEventDontKeepSession', cb, { keepSession: false, promise: true });
+	setTimeout(() => mevent.getEvent('tryEventDontKeepSession').resolve('tryEventDontKeepSession function executed'), 4000);
+
+	this.tryAnEventInReject = () => {
+		mevent.create('tryAnEventInReject', null, { promise: true });
+		setTimeout(() => mevent.getEvent('tryAnEventInReject').reject('tryAnEventInReject function executed'), 5000);;
 	};
 }
 
 // -------------- AHEAD
-myLib.ready(async () => {
-	console.log('MyLib is ready');
-	myLib.listen(async (err, data) => { // if promise is enable you can just do it : await myLib.listen();
-		if (err) return ;
+myLib.tryEventInSingleParam(data => {
+	console.log(data);
+	myLib.tryEventMultiParams(async (err, data) => {
 		console.log(err, data);
-		let res = await myLib.response();
-		console.log(data, '=>', res);
-		await myLib.send('Send a message');
+		data = await myLib.tryEventWithPromise();
+		console.log(data);
+		data = await myLib.tryEventKeepSession();
+		console.log(data);
+		data = await myLib.tryEventKeepSession();
+		console.log(data);
+		data = await myLib.tryEventDontKeepSession();
+		console.log(data);
+		myLib.tryEventDontKeepSession(() => {
+			console.log('tryEventDontKeepSession 2');
+		});
+		await myLib.tryAnEventInReject();
 	});
 });

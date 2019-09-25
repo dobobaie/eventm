@@ -1,62 +1,92 @@
-let listSections = {};
+const Eventm = function() {
+  const childEvent = function(name, options) {
+    const _engine = {
+      dataInCache: null,
+      state: null,
+      stack: []
+    };
 
-module.exports = (section) => {
-	section = (section ? section : 'default');
-	listSections[section] = (listSections[section] ? listSections[section] : {
-		events: {},
-	});
+    // configuration promise
+    const promise =
+      (options.promise &&
+        new Promise((resolve, reject) => {
+          options.resolve = resolve;
+          options.reject = reject;
+        })) ||
+      undefined;
 
-	const execEvent = (isResolve, specificKey) => (name, data) => {
-		listSections[section].events[name] = (listSections[section].events[name] ? listSections[section].events[name] : {
-			cache: null,
-			called: false,
-			isResolve: false,
-			stack: [],
-		});
-		
-		listSections[section].events[name].cache = data;
-		listSections[section].events[name].called = true;
-		listSections[section].events[name].isResolve = isResolve;
-		listSections[section].events[name].stack = listSections[section].events[name].stack.filter((elem, key) => {
-			if (specificKey !== undefined && specificKey !== key) return elem;
-			if (elem.cb && elem.cb !== null && isResolve === true && !elem.onlyData) elem.cb(null, data);
-			if (elem.cb && elem.cb !== null && ((!elem.onlyData && isResolve === false) || (isResolve === true && elem.onlyData))) elem.cb(data);
-			if (elem.promise === true) (listSections[section].events[name].isResolve ? elem.resolve(data) : elem.reject(data));
-			return !elem.isUnique;
-		});
-	};
+    // execute callback
+    const executeCallback = cb => {
+      if (options.promise) {
+        _engine.state === 'resolve'
+          ? options.resolve(_engine.dataInCache)
+          : options.reject(_engine.dataInCache);
+      }
+      if (typeof(cb) !== "function") {
+        return undefined;
+      }
+      if (options.disableErrorParameter && _engine.state === "resolve") {
+        return cb(_engine.dataInCache);
+      }
+      return cb(
+        _engine.state === "reject" && _engine.dataInCache,
+        _engine.state === "resolve" && _engine.dataInCache
+      );
+    }
 
-	return {
-		resolve: execEvent(true),
-		reject: execEvent(false),
-		on: (name, cb, options) => {
-			options = (options ? options : {});
-			listSections[section].events[name] = (listSections[section].events[name] ? listSections[section].events[name] : {
-				cache: null,
-				called: false,
-				isResolve: false,
-				stack: [],
-			});
-			return new Promise((resolve, reject) => {
-				let eventId = listSections[section].events[name].stack.push({
-					cb: cb,
-					resolve: resolve,
-					reject: reject,
-					isUnique: (typeof(options.isUnique) === 'boolean' ? options.isUnique : true),
-					onlyData: (typeof(options.onlyData) === 'boolean' ? options.onlyData : false),
-					promise: (typeof(options.promise) === 'boolean' ? options.promise : false),
-				}) - 1;
+    // state manager
+    const setStateEvent = state => data => {
+      if (_engine.state !== null) {
+        throw name + '_statement_is_already_set_to_' + _engine.state;
+      }
+      _engine.state = state;
+      _engine.dataInCache = data;
+      _engine.stack.map(cb => executeCallback(cb));
+      _engine.stack = [];
+    };
 
-				if (listSections[section].events[name].called === true && options.cache === true) {
-					execEvent(listSections[section].events[name].isResolve, eventId)(name, listSections[section].events[name].cache);
-				}
+    this.getPromise = () => promise;
+    this.resolve = setStateEvent('resolve');
+    this.reject = setStateEvent('reject');
+    this.push = cb => {
+      if (_engine.state !== null && options.keepSession) {
+        return executeCallback(cb);
+      }
+      const elemId = _engine.stack.push(cb) - 1;
+      return elemId;
+    };
 
-				if (options.removeCache === true) {
-					listSections[section].events[name].cache = null;
-					listSections[section].events[name].called = false;
-					listSections[section].events[name].isResolve = false;
-				}
-			});
-		},
-	};
+    return this;
+  }
+
+  const listEvents = {};
+  this.getEvent = name => listEvents[name];
+  this.create = (name, cb, options) => {
+    // configuration options
+    options = {
+      keepSession:
+        options && typeof options.keepSession === "boolean"
+          ? options.keepSession
+          : true,
+      disableErrorParameter:
+        options && typeof options.disableErrorParameter === "boolean"
+          ? options.disableErrorParameter
+          : false,
+      promise:
+        options && typeof options.promise === "boolean"
+          ? options.promise
+          : false
+    };
+
+    // create new event
+    listEvents[name] = listEvents[name] || new childEvent(name, options);
+    listEvents[name].push(cb);
+    return listEvents[name].getPromise();
+  };
+
+  return this;
 };
+
+if (module && module.exports) {
+  module.exports = Eventm;
+}
