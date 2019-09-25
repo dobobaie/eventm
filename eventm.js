@@ -35,24 +35,25 @@ const Eventm = function() {
     }
 
     // state manager
-    const setStateEvent = state => data => {
-      if (_engine.state !== null) {
+    const setStateEvent = (state, forced) => data => {
+      if (_engine.state !== null && !forced) {
         throw name + '_statement_is_already_set_to_' + _engine.state;
       }
       _engine.state = state;
       _engine.dataInCache = data;
       _engine.stack.map(cb => executeCallback(cb));
-      _engine.stack = [];
+      // _engine.stack = [];
     };
 
     this.getPromise = () => promise;
+    this.resolveForced = setStateEvent('resolve', true);
     this.resolve = setStateEvent('resolve');
     this.reject = setStateEvent('reject');
     this.push = cb => {
+      const elemId = _engine.stack.push(cb) - 1;
       if (_engine.state !== null && options.keepSession) {
         return executeCallback(cb);
       }
-      const elemId = _engine.stack.push(cb) - 1;
       return elemId;
     };
 
@@ -63,17 +64,18 @@ const Eventm = function() {
   this.getEvent = name => listEvents[name];
   this.create = (name, cb, options) => {
     // configuration options
+    options = options || {};
     options = {
       keepSession:
-        options && typeof options.keepSession === "boolean"
+        typeof options.keepSession === "boolean"
           ? options.keepSession
           : true,
       disableErrorParameter:
-        options && typeof options.disableErrorParameter === "boolean"
+        typeof options.disableErrorParameter === "boolean"
           ? options.disableErrorParameter
           : false,
       promise:
-        options && typeof options.promise === "boolean"
+        typeof options.promise === "boolean"
           ? options.promise
           : false
     };

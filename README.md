@@ -11,7 +11,8 @@ $ npm install eventm
 
 ``` js  
 // -------------- BEHIND LIBRARY SIDE
-const mevent = new require('../eventm')();
+const Eventm = require('eventm');
+const mevent = new Eventm();
 
 const myLib = new function()
 {
@@ -72,6 +73,7 @@ myLib.tryEventInSingleParam(data => {
 | Name                                                              | Description         
 | ----------------------------------------------------------------- | ------------
 | resolve(any: data = undefined)                                    | `resolve` method is used to set a success response
+| resolveForced(any: data = undefined)                              | `resolveForced` method is used to set a success response in forced mode (it means: if there are already a statement then this forces the system to recall all callbacks with the new paramter). Obviously it doesn't works for promise.
 | reject(any: data = undefined)                                     | `reject` method is used to set an error response
 | push(function: callback = null)                                   | `push`  method is used to add new callback
 
