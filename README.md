@@ -16,10 +16,10 @@ const mevent = new Eventm();
 
 const myLib = new function()
 {
-	this.tryEventInSingleParam = (cb) => mevent.create('tryEventInSingleParam', cb, { disableErrorParameter: true });
+	this.tryEventInSingleParam = (cb) => mevent.create('tryEventInSingleParam', cb);
 	setTimeout(() => mevent.getEvent('tryEventInSingleParam').resolve('tryEventInSingleParam function executed'), 1000);
 
-	this.tryEventMultiParams = (cb) => mevent.create('tryEventMultiParams', cb);
+	this.tryEventMultiParams = (cb) => mevent.create('tryEventMultiParams', cb, { disableErrorParameter: false });
 	setTimeout(() => mevent.getEvent('tryEventMultiParams').resolve('tryEventMultiParams function executed'), 2000);
 
 	this.tryEventWithPromise = (cb) => mevent.create('tryEventWithPromise', cb, { promise: true });
@@ -81,6 +81,6 @@ myLib.tryEventInSingleParam(data => {
 
 | Name                  | Default | Description  
 | --------------------- | ------- | -----------
-| disableErrorParameter |  false  | true = When the callback is executing, only `data` parameter is accessible
+| disableErrorParameter |  true  | true = When the callback is executing, only `data` parameter is accessible
 | keepSession           |  true   | true = If the callback is alreayd executed, `keepSession` keep the session open for the futur callback
 | promise               |  false  | true = Enable Promise and `create` method return a Promise

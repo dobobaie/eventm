@@ -73,7 +73,7 @@ const Eventm = function() {
       disableErrorParameter:
         typeof options.disableErrorParameter === "boolean"
           ? options.disableErrorParameter
-          : false,
+          : true,
       promise:
         typeof options.promise === "boolean"
           ? options.promise

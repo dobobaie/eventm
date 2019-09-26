@@ -3,10 +3,10 @@ const mevent = new require('../eventm')();
 
 const myLib = new function()
 {
-	this.tryEventInSingleParam = (cb) => mevent.create('tryEventInSingleParam', cb, { disableErrorParameter: true });
+	this.tryEventInSingleParam = (cb) => mevent.create('tryEventInSingleParam', cb);
 	setTimeout(() => mevent.getEvent('tryEventInSingleParam').resolve('tryEventInSingleParam function executed'), 1000);
 
-	this.tryEventMultiParams = (cb) => mevent.create('tryEventMultiParams', cb);
+	this.tryEventMultiParams = (cb) => mevent.create('tryEventMultiParams', cb, { disableErrorParameter: false });
 	setTimeout(() => mevent.getEvent('tryEventMultiParams').resolve('tryEventMultiParams function executed'), 2000);
 
 	this.tryEventWithPromise = (cb) => mevent.create('tryEventWithPromise', cb, { promise: true });

@@ -1,6 +1,6 @@
 {
   "name": "eventm",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "description": "Eventm help you to manage all evenements in your code. The library store the state and the callback stack for you.",
   "main": "eventm.min.js",
   "scripts": {
