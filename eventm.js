@@ -17,16 +17,13 @@ const Eventm = function() {
 
     // execute callback
     const executeCallback = cb => {
-      if (options.promise) {
-        _engine.state === 'resolve'
-          ? options.resolve(_engine.dataInCache)
-          : options.reject(_engine.dataInCache);
-      }
       if (typeof(cb) !== "function") {
         return undefined;
       }
-      if (options.disableErrorParameter && _engine.state === "resolve") {
-        return cb(_engine.dataInCache);
+      if (options.promise === true) {
+        return _engine.state === "reject"
+          ? undefined
+          : cb(_engine.dataInCache);
       }
       return cb(
         _engine.state === "reject" && _engine.dataInCache,
@@ -42,6 +39,11 @@ const Eventm = function() {
       _engine.state = state;
       _engine.dataInCache = data;
       _engine.stack.map(cb => executeCallback(cb));
+      if (options.promise === true) {
+        _engine.state === 'resolve'
+          ? options.resolve(_engine.dataInCache)
+          : options.reject(_engine.dataInCache);
+      }
       // _engine.stack = [];
     };
 
@@ -50,11 +52,11 @@ const Eventm = function() {
     this.resolve = setStateEvent('resolve');
     this.reject = setStateEvent('reject');
     this.push = cb => {
-      const elemId = _engine.stack.push(cb) - 1;
+      _engine.stack.push(cb) - 1;
       if (_engine.state !== null && options.keepSession) {
-        return executeCallback(cb);
+        executeCallback(cb);
       }
-      return elemId;
+      return this.getPromise();
     };
 
     return this;
@@ -62,7 +64,7 @@ const Eventm = function() {
 
   const listEvents = {};
   this.getEvent = name => listEvents[name];
-  this.create = (name, cb, options) => {
+  this.create = (name, options) => {
     // configuration options
     options = options || {};
     options = {
@@ -70,20 +72,15 @@ const Eventm = function() {
         typeof options.keepSession === "boolean"
           ? options.keepSession
           : true,
-      disableErrorParameter:
-        typeof options.disableErrorParameter === "boolean"
-          ? options.disableErrorParameter
-          : true,
       promise:
         typeof options.promise === "boolean"
           ? options.promise
-          : false
+          : true
     };
 
     // create new event
     listEvents[name] = listEvents[name] || new childEvent(name, options);
-    listEvents[name].push(cb);
-    return listEvents[name].getPromise();
+    return listEvents[name];
   };
 
   return this;
