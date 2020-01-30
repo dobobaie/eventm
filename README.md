@@ -77,4 +77,4 @@ myLib.tryEvenSuccessCallback(data => {
 | Name                  | Default | Description  
 | --------------------- | ------- | -----------
 | keepSession           |  true   | true = If the callback is alreayd executed, `keepSession` keep the session open for the futur callback
-| promise               |  false  | true = The callback is called with a single paramter - false = The callback is call with (`err`, `data`) => {} parameters
+| promise               |  true   | true = The callback is called with a single paramter - false = The callback is call with (`err`, `data`) => {} parameters
