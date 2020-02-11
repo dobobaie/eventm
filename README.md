@@ -1,3 +1,4 @@
+[ DEPRECATED ]
 # Event Manager
 Eventm help you to manage all evenements in your code. The library store the state, data returned and the callback stack for you.  
 Can be used like RabbitMQ in your local project.
